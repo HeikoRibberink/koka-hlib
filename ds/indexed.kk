@@ -61,11 +61,11 @@ pub fun auto-increment(action : () -> <index<i>|e> a) : <index<i>,incr<i>|e> a
 // val new =
 //   with index-in(vec)
 //   vec.map fn(x)
-//     with i <- increment-take
+//     with i <- take-increment
 //     x * i
 // assert("`new` should equal `[0, 2, 6]`", new == [0, 2, 6].vector)
 // ```
-pub fun increment-take(action : (i) -> e a) : <index<i>,incr<i>|e> a
+pub fun take-increment(action : (i) -> e a) : <index<i>,incr<i>|e> a
   with auto-increment
   take-index(action)
 

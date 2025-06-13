@@ -53,7 +53,7 @@ pub fun listlist/matrix(ll : list<list<a>>) : maybe<matrix<a>>
   else
     Matrix(rows, cols, flattened.vector)
 
-fun check-idx(^mat : matrix<a>, ^idx : idx) : bool
+fun check-idx(^mat : matrix<a>, idx : idx) : bool
   val (r, c) = idx
   if r >= 0 && r < mat.rows && c >= 0 && c < mat.cols then
     True
@@ -61,8 +61,8 @@ fun check-idx(^mat : matrix<a>, ^idx : idx) : bool
     False
   
 
-pub fun @index(^mat : matrix<a>, ^idx : idx) : exn a
-  mat.at(idx).expect(idx.show ++ " to be in bounds.")
+pub fun @index(^mat : matrix<a>, idx : idx) : exn a
+  mat.at(idx).expect(idx.show ++ " is out of bounds.")
 
 pub fun at(^mat : matrix<a>, ^idx : idx) : maybe<a>
   if mat.check-idx(idx) then

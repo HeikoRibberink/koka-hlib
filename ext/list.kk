@@ -57,3 +57,7 @@ pub fip fun map-at(xs : list<a>, i : int, ^f : a -> e a) : e list<a>
     Cons(x, xs) | i == 0 -> Cons(f(x), xs)
     Cons(x, xs) -> Cons(x, xs.map-at(i - 1, f))
 
+pub fip fun indexed(xs : list<a>, i : int = 0) : list<(int, a)>
+  match xs
+    Nil -> Nil
+    Cons(x, xs) -> Cons((i, x), xs.indexed(i = i + 1))
