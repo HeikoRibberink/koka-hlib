@@ -2,7 +2,6 @@ module matrix
 
 import ds/indexed
 import ext/vector
-import ext/maybe
 import patterns/exit
 
 // An index into a matrix
