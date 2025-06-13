@@ -1,37 +1,29 @@
 module matrix
 
-import help/lst
-import help/exit
-import help/util
-import help/maybe
-
-import indexed
-import vectorext
+import ds/indexed
+import ext/vector
+import ext/maybe
+import patterns/exit
 
 // An index into a matrix
-pub value struct idx
-  i : int
-  j : int
+pub alias idx = (int, int)
 
-pub fun idx/(==)(a : idx, b : idx) : bool
-  a.i == b.i && a.j == b.j
+pub fun idx/i((i, _) : idx) : int
+  i
 
-pub fun idx/(+)(a : idx, b : idx) : idx
-  Idx(a.i + b.i, a.j + b.j)
+pub fun idx/j((_, j) : idx) : int
+  j
 
-pub fun idx/int(idx : idx, cols : int) : int
-  idx.i * cols + idx.j
+pub fun idx/(+)((i1, j1) : idx, (i2, j2) : idx) : idx
+  (i1 + i2, j1 + j2)
 
-pub fun idx/show(idx : idx) : string
-  "Idx(" ++ idx.i.show ++ ", " ++ idx.j.show ++ ")"
+pub fun idx/int((i, j) : idx, cols : int) : int
+  i * cols + j
 
 pub fun int/idx(i : int, cols : int) : idx
-  Idx(i / cols, i % cols)
+  (i / cols, i % cols)
 
-pub fun intpair/idx((i, j) : (int, int)) : idx
-  Idx(i, j)
-
-pub fun into-indexer(mat : matrix<a>) : (int -> idx)
+pub fun into-indexer(mat : matrix<a>) : (int -> e idx)
   val cols = mat.cols
   fn(i : int)
     idx(i, cols)
@@ -43,6 +35,14 @@ pub value struct matrix<a>
   cols : int
   data : vector<a>
 
+// Create a new matrix of `rows` by `cols` with elements given by function `f`.
+pub fun func/matrix(rows : int, cols : int, f : idx -> e a) : e matrix<a>
+  val data = vector-init(rows * cols) fn(i)
+    f(i.idx(cols))
+  Matrix(rows, cols, data)
+
+// Create a new matrix from a list of lists `ll`.
+// Returns Nothing if `ll` is not square.
 pub fun listlist/matrix(ll : list<list<a>>) : maybe<matrix<a>>
   with exit-nothing
   val rows = ll.length
@@ -54,24 +54,39 @@ pub fun listlist/matrix(ll : list<list<a>>) : maybe<matrix<a>>
   else
     Matrix(rows, cols, flattened.vector)
 
+fun check-idx(^mat : matrix<a>, ^idx : idx) : bool
+  val (r, c) = idx
+  if r >= 0 && r < mat.rows && c >= 0 && c < mat.cols then
+    True
+  else 
+    False
+  
+
 pub fun @index(^mat : matrix<a>, ^idx : idx) : exn a
   mat.at(idx).expect(idx.show ++ " to be in bounds.")
 
 pub fun at(^mat : matrix<a>, ^idx : idx) : maybe<a>
-  val Idx(r, c) = idx
-  if r >= 0 && r < mat.rows && c >= 0 && c < mat.rows then
+  if mat.check-idx(idx) then
     val i = idx.int(mat.cols)
     mat.data.at(i)
   else 
     Nothing
 
 pub fun set(mat : matrix<a>, idx : idx, new : a) : pure matrix<a>
-  var data := mat.data
-  data[idx.int(mat.cols)] := new
-  mat(data = data)
+  val Matrix(r, c, d) = mat
+  if mat.check-idx(idx) then
+    var data := d
+    data[idx.int(c)] := new
+    Matrix(r, c, data)
+  else
+    throw("Index " ++ idx.show ++ " out of bounds.")
 
-pub fun assign/@index(mat : local-var<h, matrix<a>>, idx : idx, assigned : a) : <local<h>,pure> ()
+pub fun local-var/assign/@index(mat : local-var<h, matrix<a>>, idx : idx, assigned : a) : <local<h>,pure> ()
   mat := mat.set(idx, assigned)
+
+pub fun ref/assign/@index(mat : ref<h, matrix<a>>, idx : idx, assigned : a) : <read<h>,write<h>,pure> ()
+  mat.modify fn(m)
+    m[idx] := assigned
 
 pub fun show(mat : matrix<a>, ?show : a -> e string) : e string
   var repr := ""
@@ -81,15 +96,15 @@ pub fun show(mat : matrix<a>, ?show : a -> e string) : e string
     val showed = mask<local<_>> {show(elem)}
     val add =
       match i
-        Idx(0, 0) -> 
+        (0, 0) -> 
           "[[" ++ showed
-        Idx(_, 0) ->
+        (_, 0) ->
           " [" ++ showed
-        Idx(r, c) | r == height && c == width ->
+        (r, c) | r == height && c == width ->
           showed ++ "]]"
-        Idx(_, c) | c == width ->
+        (_, c) | c == width ->
           showed ++ "],\n"
-        Idx(_, _) ->
+        (_, _) ->
           showed ++ ", "
     repr := repr ++ add
   repr
@@ -101,18 +116,22 @@ pub fun foreach-indexed(^mat : matrix<a>, ^f : (idx, a) -> _ ())
 pub fun foreach(^mat : matrix<a>, f : a -> e ()) : e ()
   mat.data.foreach(f)
 
-pub fun foldl(^mat : matrix<_>, s, ^f, i : int = 0)
-  mat.data.foldl(s, f, i)
+pub fun foldl(mat : matrix<a>, s : b, ^f : (b, a) -> <index<idx>|e> b) : e b
+  with index-in(mat)
+  mat.data.foldl(s, i = 0) fn(state, e)
+    with auto-increment
+    f(state, e)
   
-pub fun map-indexed(^mat : matrix<a>, ^f : (idx, a) -> e b) : e matrix<b>
+pub fun map(mat : matrix<a>, ^f : (idx, a) -> e b) : e matrix<b>
   var flat-idx := 0
+  val cols = mat.cols
   val new-data = 
     mat.data.vector/map fn(e)
-      val idx = flat-idx.idx(mat.cols)
+      val idx = flat-idx.idx(cols)
+      val res = mask<local<_>> {f(idx, e)}
       flat-idx := flat-idx + 1
-      mask<local<_>>
-        f(idx, e)
-  Matrix(mat.rows, mat.cols, new-data)
+      res
+  Matrix(mat.rows, cols, new-data)
 
 pub fun find-all(^mat : matrix<a>, ^f : a -> _ bool) : _ list<a>
   var res := Nil
@@ -123,9 +142,20 @@ pub fun find-all(^mat : matrix<a>, ^f : a -> _ bool) : _ list<a>
   res
 
 // Create a `matrix<char>` from `text`, consisting of multiple lines.
-pub fun charlistlist/charmatrix(text : string) : maybe<matrix<char>>
+pub fun string/charmatrix(text : string) : maybe<matrix<char>>
   text
   .lines
   .map(list)
-  .lst/filter([])
+  .remove(is-nil)
   .matrix
+
+pub fun charmatrix/join-rows(mat : matrix<char>, sep : char) : exn string
+  vector-init(mat.rows * (mat.cols + 1)) fn(index)
+    val (i, j) = index.idx(mat.cols + 1)
+    if j < mat.cols then
+      mat[(i, j)]
+    else
+      sep
+  .string
+ 
+  

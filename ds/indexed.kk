@@ -4,13 +4,16 @@ module indexed
 // Use 
 // * `index` to retrieve the index.
 // * `next` to advance the index.
-pub linear effect indexed<i>
+pub linear effect index<i>
   // Get the index.
   fun index() : i
+
+// Addendum to `index<i>` which allows manually incrementing an index.
+pub linear effect incr<i>
   // Advance the index.
   fun next() : ()
 
-// Execute action with an index into `indexable` using effect `indexed`.
+// Execute action with an index into `indexable` using effect row `index<i>,incr<i>`.
 // This is can be used for iterators that do not have an `indexed` variant.
 // # Example
 // ```kk
@@ -27,33 +30,45 @@ pub linear effect indexed<i>
 // To use `index-in` with a custom collection, there must be a function
 // `into-indexer` that maps that collection to an indexer function, which maps
 // an integer to an index for that collection.
-pub fun index-in(indexable : a, action : () -> <indexed<i>|e> b, ?into-indexer : a -> e (int -> e i)) : e b
+pub fun index-in(indexable : a, action : () -> <index<i>,incr<i>|e> b, ?into-indexer : a -> e (int -> e i)) : e b
   val indexer = mask<local<_>> {into-indexer(indexable)}
   var i := 0
   with handler
     fun index()
       val temp = i
       mask<local<_>>{indexer(temp)}
+  with handler
     fun next()
       i := i + 1
   action()
 
-// Advances the index after executing `action`.
+// Executes `action` with the index, while removing the `index<i>` effect.
+pub fun take-index(action : (i) -> e a) : <index<i>|e> a
+  val i = index()
+  with mask<index<_>>
+  action(i)
+
+pub fun auto-increment(action : () -> <index<i>|e> a) : <index<i>,incr<i>|e> a
+  val out = mask<incr<_>> {action()}
+  next()
+  out
+
+// Advances the index after executing `action` with the index, while removing
+// both the `index<i>` and `incr<i>` effects.
 // # Example
 // ```kk
 // val vec = [1, 2, 3].vector
 // val new =
 //   with index-in(vec)
 //   vec.map fn(x)
-//     with i <- loop-increment
+//     with i <- increment-take
 //     x * i
 // assert("`new` should equal `[0, 2, 6]`", new == [0, 2, 6].vector)
 // ```
-pub fun loop-increment(action : (i) -> e a) : <indexed<i>|e> a
-  val i = index()
-  val out = mask<indexed<_>> {action(i)}
-  next()
-  out
+pub fun increment-take(action : (i) -> e a) : <index<i>,incr<i>|e> a
+  with auto-increment
+  take-index(action)
+
 
 pub fun vector/into-indexer(v : vector<a>) : (int -> e int)
   fn(x) x
