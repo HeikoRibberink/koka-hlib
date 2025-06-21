@@ -6,8 +6,8 @@ abstract struct mslice<h, a>
   mat : ref<h, matrix<a>>
   top : int
   left : int
-  rows : int
-  cols : int
+  pub rows : int
+  pub cols : int
   check : bool
 
 pub fun matrix/mslice(mat : matrix<_>)
@@ -59,6 +59,8 @@ pub fun mslice/slice(mslice : mslice<_, _>, top : int = 0, left : int = 0, rows 
 pub fun unchecked(mslice : mslice<_, _>) : mslice<_, _>
   mslice(check = False)
   
+pub fun checked(mslice : mslice<_, _>) : mslice<_, _>
+  mslice(check = True)
 
 pub fun @index(mslice : mslice<h, a>, idx : idx) : <read<h>,pure> a
   mslice.assert-valid-idx(idx)
