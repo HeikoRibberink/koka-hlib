@@ -62,7 +62,9 @@ fun check-idx(^mat : matrix<a>, idx : idx) : bool
   
 
 pub fun @index(^mat : matrix<a>, idx : idx) : exn a
-  mat.at(idx).expect(idx.show ++ " is out of bounds.")
+  match mat.at(idx)
+    Just(x) -> x
+    Nothing -> throw("Index " ++ show(idx) ++ " out of bounds")
 
 pub fun at(^mat : matrix<a>, ^idx : idx) : maybe<a>
   if mat.check-idx(idx) then
