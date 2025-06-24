@@ -28,7 +28,7 @@ pub fun into-indexer(mat : matrix<a>) : (int -> e idx)
     idx(i, cols)
 
 
-// An efficient 2d matrix backed by a vector.
+// A 2d matrix backed by a vector.
 pub value struct matrix<a>
   rows : int
   cols : int
