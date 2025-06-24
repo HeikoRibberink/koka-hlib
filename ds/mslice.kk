@@ -53,6 +53,21 @@ pub fun mslice/slice(mslice : mslice<_, _>, top : int = 0, left : int = 0, rows 
     val Mslice(mat, t, l, _, _, check) = mslice
     Just(Mslice(mat, t + top, l + left, rows, cols, check))
 
+// Vertically split `mslice` into a pair of `mslice`s, where the first slice
+// has the first `col` columns and the second has the rest of the columns.
+pub fun vsplit(mslice : mslice<_, _>, col : int)
+  match (mslice.slice(cols = col), mslice.slice(left = col + 1))
+    (Just(a), Just(b)) -> Just((a, b))
+    (_, _) -> Nothing
+
+// Horizontally split `mslice` into a pair of `mslice`s, where the first slice
+// has the first `row` rows and the second has the rest of the rows.
+pub fun hsplit(mslice : mslice<_, _>, row : int)
+  match (mslice.slice(rows = row), mslice.slice(top = row + 1))
+    (Just(a), Just(b)) -> Just((a, b))
+    (_, _) -> Nothing
+
+
 /* Disables slice bounds checking for this slice.
    This allows slices to be used as an offset, for example in a GUI.
  */

@@ -96,9 +96,9 @@ pub fun show(mat : matrix<a>, ?show : a -> e string) : e string
     val add =
       match i
         (0, 0) -> 
-          "[[" ++ showed
+          "[[" ++ showed ++ ", "
         (_, 0) ->
-          " [" ++ showed
+          " [" ++ showed ++ ", "
         (r, c) | r == height && c == width ->
           showed ++ "]]"
         (_, c) | c == width ->
