@@ -1,6 +1,8 @@
 module ds/mslice
 import ds/matrix
 
+import math
+
 // Shared slice of a `matrix`.
 abstract struct mslice<h, a>
   mat : ref<h, matrix<a>>
