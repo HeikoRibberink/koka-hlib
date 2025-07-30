@@ -13,9 +13,6 @@ pub fun idx/i((i, _) : idx) : int
 pub fun idx/j((_, j) : idx) : int
   j
 
-pub fun idx/(+)((i1, j1) : idx, (i2, j2) : idx) : idx
-  (i1 + i2, j1 + j2)
-
 pub fun idx/int((i, j) : idx, cols : int) : int
   i * cols + j
 
