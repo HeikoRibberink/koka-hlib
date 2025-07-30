@@ -1,5 +1,7 @@
 module exit
 
+import patterns/common
+
 pub effect exit<a>
   final ctl exit(res : a) : b
   
@@ -31,4 +33,10 @@ pub fun assert(action : () -> e bool) : <exit<()>|e> ()
     ()
   else
     exit(())
-  
+
+pub fun loop-exit(^action : () -> <exit<a>,div|e> ()) : <div|e> a
+  with handler
+    final ctl exit(res)
+      res
+  infinite-loop(action)
+
