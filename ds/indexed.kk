@@ -75,3 +75,6 @@ pub fun vector/into-indexer(v : vector<a>) : (int -> e int)
 
 pub fun list/into-indexer(l : list<a>) : (int -> e int)
   fn(x) x
+
+pub fun string/into-indexer(s : string) : (int -> e int)
+  fn(x) x
