@@ -1,6 +1,6 @@
 module exit
 
-import patterns/common
+import hlib/patterns/common
 
 pub effect exit<a>
   final ctl exit(res : a) : b

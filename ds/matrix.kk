@@ -1,8 +1,8 @@
 module matrix
 
-import ds/indexed
-import ext/vector
-import patterns/exit
+import hlib/ds/indexed
+import hlib/ext/vector
+import hlib/patterns/exit
 
 // An index into a matrix
 pub alias idx = (int, int)
