@@ -33,21 +33,12 @@ pub tail fun unique(xs : list<a>, ^?(==) : (a, a) -> bool) : _ list<a>
     Cons(x, xs) ->
       xs.unique().insert-unique(x)
 
-pub fun lst/partition(xs : list<a>, pred : a -> e bool, aux1 : list<a> = [], aux2 : list<a> = []) : e (list<a>, list<a>)
-  match xs
-    Nil -> (aux1, aux2)
-    Cons(x, xs) -> if pred(x) then 
-      xs.lst/partition(pred, Cons(x, aux1), aux2) 
-    else 
-      xs.lst/partition(pred, aux1, Cons(x, aux2))
-
-
-pub fun lst/qsort(xs : list<a>, ^?(<) : (a, a) -> bool) : div list<a>
+pub fun qsort(xs : list<a>, ^?(<) : (a, a) -> bool) : div list<a>
   match xs
     Nil -> Nil
     Cons(x, Nil) -> [x]
     Cons(x, xs) -> 
-      val (l, r) = xs.lst/partition fn(y) y < x
+      val (l, r) = xs.partition fn(y) y < x
       l.qsort ++ Cons(x, r.qsort)
 
 pub fip fun map-at(xs : list<a>, i : int, ^f : a -> e a) : e list<a>
