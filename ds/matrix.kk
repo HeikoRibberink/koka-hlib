@@ -50,6 +50,9 @@ pub fun listlist/matrix(ll : list<list<a>>) : maybe<matrix<a>>
   else
     Matrix(rows, cols, flattened.vector)
 
+pub fun size(^m : matrix<a>) : (int, int)
+  (m.rows, m.cols)
+
 fun check-idx(^mat : matrix<a>, idx : idx) : bool
   val (r, c) = idx
   if r >= 0 && r < mat.rows && c >= 0 && c < mat.cols then

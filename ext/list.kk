@@ -1,5 +1,7 @@
 module list
 
+import std/core/undiv
+
 type insert-result<a>
   Success(set : list<a>)
   Failure(set : list<a>, elem : a)
@@ -52,3 +54,22 @@ pub fip fun indexed(xs : list<a>, i : int = 0) : list<(int, a)>
   match xs
     Nil -> Nil
     Cons(x, xs) -> Cons((i, x), xs.indexed(i = i + 1))
+
+fip fun ext/splitn-acc(part : ctx<list<a>>, end : list<a>, n : int) : (list<a>, list<a>)
+  if n <= 0 then
+    (part ++. Nil, end)
+  else match end
+    Nil -> (part ++. Nil, Nil)
+    Cons(x, xs) -> splitn-acc(part ++ ctx Cons(x, hole), xs, n - 1)
+
+pub fip fun ext/splitn(xs : list<a>, n : int) : (list<a>, list<a>)
+  splitn-acc(ctx hole, xs, n)
+
+fun split-every-acc(xs : list<a>, acc : ctx<list<list<a>>>, ^n : int) : list<list<a>>
+  match splitn(xs, n)
+    (Nil, Nil) -> acc ++. Nil
+    (front, back) -> split-every-acc(pretend-decreasing(back), acc ++ ctx Cons(front, hole), n)
+
+pub fun split-every(xs : list<a>, n : int, ?kk-file-line : string) : exn list<list<a>>
+  assert("`split-every` requires n >= 1", n >= 1)
+  split-every-acc(xs, ctx hole, n)
