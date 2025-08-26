@@ -9,6 +9,12 @@ pub fun foldl(^v : vector<a>, s : b, f : (b, a) -> e b, i : int = 0) : e b
       val n = f(s, e)
       foldl(pretend-decreasing(v), n, f, i + 1)
 
+pub fun map-indexed(v : vector<a>, f : (int, a) -> e b) : e vector<b>
+  var i := -1 
+  v.map fn(x)
+    i := i + 1
+    f(i, x)
+
 pub fun show(v : vector<a>, ?show : a -> _ string) : _ string
   if v.length > 0 then
     val mapped = v.map(show)
@@ -23,3 +29,6 @@ pub fun updated(^v : vector<a>, i : int, assigned : a) : pure vector<a>
   new[i] := assigned
   val res = new
   res
+
+pub fun sum(^v : vector<int>) : int
+  v.foldl(0, (+))
