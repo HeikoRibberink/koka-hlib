@@ -14,3 +14,7 @@ pub fip fun pair/(-)(l : (a, b), r : (a, b), ^?a/(-) : (a, a) -> e a, ^?b/(-) : 
 pub fun pair/(*)(l : (a, a), c : a, ^?(*) : (a, a) -> e a) : e (a, a)
   val (a, b) = l
   (a * c, b * c)
+
+//pub fun pair/(/)(l : (a, a), c : a, ^?(/) : (a, a) -> e a) : e (a, a)
+//  val (a, b) = l
+//  (a / c, b / c)
