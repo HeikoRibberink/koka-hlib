@@ -1,6 +1,11 @@
 module common
 
-pub fun peep(x, action)
+// Inspect a list of dot selections without breaking the line.
+// # Example
+// ```koka
+// [1, 2, 3].map(_ * 2).peep(println).sum
+// ```
+pub fun peep(x : a, action : a -> e ()) : e a
   action(x)
   x
 
