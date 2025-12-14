@@ -29,7 +29,7 @@ pub tail fun insert-unique(xs : list<a>, elem : a, ^?(==) : (a, a) -> bool) : li
       else
         Cons(current, insert-unique(tail, elem))
 
-pub tail fun unique(xs : list<a>, ^?(==) : (a, a) -> bool) : _ list<a>
+pub fun unique(xs : list<a>, ^?(==) : (a, a) -> bool) : _ list<a>
   match xs
     Nil -> Nil
     Cons(x, xs) ->
@@ -73,3 +73,15 @@ fun split-every-acc(xs : list<a>, acc : ctx<list<list<a>>>, ^n : int) : list<lis
 pub fun split-every(xs : list<a>, n : int, ?kk-file-line : string) : exn list<list<a>>
   assert("`split-every` requires n >= 1", n >= 1)
   split-every-acc(xs, ctx hole, n)
+
+// Calculates the cartesian product of `xs` and `ys`
+pub fun product(xs : list<a>, ys : list<b>) : list<(a, b)>
+  match xs
+    Nil -> Nil
+    Cons(x, xs) ->
+      val paired = ys.map fn(e)
+        (x, e)
+      paired ++ product(xs, ys)
+
+pub fun self-product(xs : list<a>) : list<(a, a)>
+  product(xs, xs)

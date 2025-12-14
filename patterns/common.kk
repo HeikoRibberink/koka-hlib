@@ -12,6 +12,9 @@ pub fun peep(x : a, action : a -> e ()) : e a
 pub fun todo(?kk-file-line : string) : exn a
   throw("TODO reached at " ++ kk-file-line)
 
+pub fun unreachable(?kk-file-line : string) : exn a
+  throw("Unreachable reached at " ++ kk-file-line)
+
 pub fip fun infinite-loop(^action : () -> <div|e> ()) : <div|e> a
   action()
   infinite-loop(action)

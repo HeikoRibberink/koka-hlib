@@ -1,25 +1,25 @@
 module matrix
 
-import hlib/ds/indexed
+pub import hlib/ds/indexed
 import hlib/ext/vector
-import hlib/patterns/exit
+pub import hlib/patterns/exit
 
 // An index into a matrix
 pub alias idx = (int, int)
 
-pub fun idx/i((i, _) : idx) : int
+pub inline fun idx/i((i, _) : idx) : int
   i
 
-pub fun idx/j((_, j) : idx) : int
+pub inline fun idx/j((_, j) : idx) : int
   j
 
-pub fun idx/int((i, j) : idx, cols : int) : int
+pub inline fun idx/int((i, j) : idx, cols : int) : int
   i * cols + j
 
-pub fun int/idx(i : int, cols : int) : idx
+pub inline fun int/idx(i : int, cols : int) : idx
   (i / cols, i % cols)
 
-pub fun into-indexer(mat : matrix<a>) : (int -> e idx)
+pub inline fun into-indexer(mat : matrix<a>) : (int -> e idx)
   val cols = mat.cols
   fn(i : int)
     idx(i, cols)
@@ -50,7 +50,7 @@ pub fun listlist/matrix(ll : list<list<a>>) : maybe<matrix<a>>
   else
     Matrix(rows, cols, flattened.vector)
 
-pub fun size(^m : matrix<a>) : (int, int)
+pub inline fun size(^m : matrix<a>) : (int, int)
   (m.rows, m.cols)
 
 fun check-idx(^mat : matrix<a>, idx : idx) : bool
