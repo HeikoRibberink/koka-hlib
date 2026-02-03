@@ -94,3 +94,12 @@ pub fun remove-first(xs : list<a>, ^pred : (a) -> e bool) : e (list<a>, maybe<a>
       else match t.remove-first(pred)
         (t', maybe) -> (Cons(h, t'), maybe)
     Nil -> (Nil, Nothing)
+
+pub fun contains(xs : list<a>, x : a, ^(==) : (a, a) -> bool) : bool
+  match xs
+    Nil -> False
+    Cons(h, t) -> 
+      if h == x then
+        True
+      else
+        t.contains(x, (==))

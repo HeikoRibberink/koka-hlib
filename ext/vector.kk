@@ -24,9 +24,9 @@ pub fun show(v : vector<a>, ?show : a -> _ string) : _ string
   else
     "[]"
 
-pub fun updated(^v : vector<a>, i : int, assigned : a) : pure vector<a>
+pub fun update(^v : vector<a>, i : int, updater : a -> <exn|e> a) : <exn|e> vector<a>
   var new := v
-  new[i] := assigned
+  new[i] := updater(new[i])
   val res = new
   res
 
