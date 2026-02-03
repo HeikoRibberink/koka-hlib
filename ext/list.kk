@@ -85,3 +85,12 @@ pub fun product(xs : list<a>, ys : list<b>) : list<(a, b)>
 
 pub fun self-product(xs : list<a>) : list<(a, a)>
   product(xs, xs)
+
+pub fun contains(xs : list<a>, x : a, ^(==) : (a, a) -> bool) : bool
+  match xs
+    Nil -> False
+    Cons(h, t) -> 
+      if h == x then
+        True
+      else
+        t.contains(x, (==))
