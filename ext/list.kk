@@ -85,3 +85,12 @@ pub fun product(xs : list<a>, ys : list<b>) : list<(a, b)>
 
 pub fun self-product(xs : list<a>) : list<(a, a)>
   product(xs, xs)
+
+// Remove the first element of `xs` satisfying `pred` and return it.
+pub fun remove-first(xs : list<a>, ^pred : (a) -> e bool) : e (list<a>, maybe<a>)
+  match xs
+    Cons(h, t) -> 
+      if pred(h) then (t, Just(h))
+      else match t.remove-first(pred)
+        (t', maybe) -> (Cons(h, t'), maybe)
+    Nil -> (Nil, Nothing)
