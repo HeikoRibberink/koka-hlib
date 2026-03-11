@@ -37,10 +37,19 @@ pub fun foreach(generator : (() -> e generated<a,b,e>), f : (a) -> e ()) : e b
       next.pretend-decreasing.foreach(f)
     Final(ret) -> ret
 
+pub fun first(generator : generator<a,b,e>, n : int) : e (first : list<a>, rest : generator<a,b,e>)
+  if n <= 0 then
+    (Nil, generator)
+  else match generator()
+    Final -> (Nil, generator)
+    Next(elem, next) -> match first(next.pretend-decreasing, n - 1)
+      (first, rest) -> (Cons(elem, first), rest)
+
 pub fun list/collect(generator : (() -> e generated<a,(),e>)) : e list<a>
   match generator()
     Final(_ : ()) -> Nil
     Next(elem, next) -> Cons(elem, list/collect(next.pretend-decreasing))
+
 
 fun main()
   var x := [1, 2, 3].generator
@@ -51,4 +60,10 @@ fun main()
         elem.println
   print-one()
   print-one()
+  list(1, 10).generator.collect.println
+  generator
+    yield(1)
+    yield(2)
+    yield(3)
+  .foreach(_.show.println)
 
