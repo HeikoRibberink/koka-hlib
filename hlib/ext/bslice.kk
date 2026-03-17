@@ -14,6 +14,5 @@ pub fun next-int64(bslice : bslice, x : int64 = 0.int64, i : int = 7) : maybe<(i
   else match bslice.next
     Just((i8, bslice')) -> 
       val x' = x.or(i8.uint8/int64.shl(i * 8))
-      //(x, x', i8.uint8/int64, i8.uint8/int64.shl(i * 8), i).trace-show
       bslice'.pretend-decreasing.next-int64(x', i - 1)
     Nothing -> Nothing
