@@ -2,6 +2,9 @@ module ssize-t
 
 import std/core/undiv
 
+pub extern int64/ssize_t(x : int64) : ssize_t
+  c inline "(kk_ssize_t)((int64_t)(#1))"
+
 pub extern (+)(l : ssize_t, r : ssize_t) : ssize_t
   c inline "(#1 + #2)"
 

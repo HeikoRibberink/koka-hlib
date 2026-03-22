@@ -61,12 +61,6 @@ pub inline fun int8/append(bytesb : bytesb, x : int8) : bytesb
   else
     bytesb'
 
-fun catch-impossible(action, ?kk-file-line : string)
-  with catch fn(_) {
-    impossible("This should not throw.")
-  }
-  action()
-
 // Appends `b` to `bytesb`. 
 pub inline fun bytes/append(bytesb : bytesb, b : bytes) : bytesb
   // This works by copying `bytesb.buf` to a `bytes` of length `bytesb.idx`,
