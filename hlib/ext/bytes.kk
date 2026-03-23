@@ -28,6 +28,6 @@ pub fun int64/unsafe-index(bytes : bytes, i : ssize_t) : int64
 pub fun int64/set(bytes : bytes, i : ssize_t, x : int64) : bytes
   var b := bytes
   for(8.ssize_t) fn(j : ssize_t)
-    val i8 = x.shr((7 - j.int) * 8).lowest-byte
+    val i8 = x.byte-at(7.int64 - j.int64)
     b := b.assign(i + j, i8)
   b

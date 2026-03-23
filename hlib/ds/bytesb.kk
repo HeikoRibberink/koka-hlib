@@ -28,6 +28,9 @@ abstract struct bytesb
   // The index into `buf`, where the next byte should come.
   idx : ssize_t
 
+pub fun bytesb(n : ssize_t = 16.ssize_t)
+  empty(n)
+
 pub fun show(bytesb : bytesb) : string
   "Bytesb(buf: " ++ show(bytesb.buf) ++ ", idx: " ++ bytesb.idx.show ++ ")"
 
